@@ -200,6 +200,11 @@
     select
     <include refid="Base_Column_List" />
     from tb_customer
+    WHERE  customer_address = #{customerAddress,jdbcType=VARCHAR}
+    <if test="customer_tel!=null and customer_tel!=''">
+      <bind name="customer_tel" value="'%' + customer_tel + '%'"/>
+      and customer_tel like #{customerTel,jdbcType=VARCHAR}
+    </if>
     limit #{_pagesize} OFFSET #{_skiprows}
   </select>
 

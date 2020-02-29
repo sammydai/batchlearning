@@ -1,4 +1,4 @@
-package com.ssm.batch.config;
+package com.ssm.batch.step;
 
 import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.json.JsonFileItemWriter;

@@ -1,26 +1,25 @@
 package com.ssm.batch.config;
 
-import com.ssm.batch.dao.CustomerMapper;
 import com.ssm.batch.entity.Customer;
-import com.ssm.batch.listen.CommonJobListener;
-import com.ssm.batch.listen.CommonStepListener;
+import com.ssm.batch.listener.*;
+import com.ssm.batch.step.CommonJsonItemWriter;
+import com.ssm.batch.step.CommonMyBatisItemReader;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.batch.item.file.FlatFileItemWriter;
-import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
-import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.batch.item.json.JacksonJsonObjectMarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @Package: com.ssm.batch.config
@@ -51,12 +50,39 @@ public class BatchJobConfig {
 	CommonJobListener commonJobListener;
 
 	@Autowired
-	CommonStepListener commonStepListener;
+	CommonSSmStepListener commonSSmStepListener;
+
+	@Autowired
+	CommonChunkListener commonChunkListener;
+
+	@Autowired
+	CommonItemReaderListener commonItemReaderListener;
+
+	@Autowired
+	CommonItemWriterListener commonItemWriterListener;
 
 	@Bean
 	@StepScope
-	public CommonMyBatisItemReader<Customer> customerReader(){
-		return new CommonMyBatisItemReader<>(sqlSessionFactory);
+	public CommonMyBatisItemReader<Customer> customerReader(@Value("#{@datesParameters}") Map<String, Object> datesParameters){
+		return new CommonMyBatisItemReader<>(sqlSessionFactory,datesParameters);
+	}
+
+	@StepScope
+	@Bean
+	public Map<String, Object> datesParameters(
+			@Value("#{jobParameters[customerAddress]}") String customerAddress,
+			@Value("#{jobParameters[customerTel]}") String customerTel,
+			@Value("#{jobParameters[customerId]}") String customerId) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("customerAddress", customerAddress);
+		map.put("customerTel", customerTel);
+		map.put("customerId", customerId);
+		System.out.println("=========map get customerAddress======:"+map.get("customerAddress"));
+		// logger.info((String) map.get("yesterday"));
+		// map.put("today", today);
+		// map.put("first_day_of_the_month", firstDayOfTheMonth);
+		// map.put("first_day_of_the_previous_month", firstDayOfThePreviousMonth);
+		return map;
 	}
 
 	@Bean
@@ -69,20 +95,19 @@ public class BatchJobConfig {
 	// 配置一个Step
 	@Bean
 	Step customerStep() {
-		// Step通过stepBuilderFactory进行配置
-		return stepBuilderFactory.get("customerStep6") //通过get获取一个StepBuilder，参数数Step的name
-				.listener(commonStepListener)
-				.<Customer, Customer>chunk(2) //方法的参数2，表示每读取到两条数据就执行一次write操作
-				.reader(customerReader()) // 配置reader
-				.writer(commonJsonItemWriter()) // 配置writer
+		return stepBuilderFactory.get("customerStep7")//通过get获取一个StepBuilder，参数数Step的name
+				.<Customer, Customer>chunk(2)//方法的参数2，表示每读取到两条数据就执行一次write操作
+				.reader(customerReader(datesParameters(null,null,null))).listener(commonItemReaderListener)// 配置reader
+				.writer(commonJsonItemWriter()).listener(commonItemWriterListener)// 配置writer
 				.build();
+
 	}
 
 	// 配置一个Job
 	@Bean
 	Job csvJob() {
 		// 通过jobBuilderFactory构建一个Job，get方法参数为Job的name
-		return jobBuilderFactory.get("customerJob6")
+		return jobBuilderFactory.get("customerJob7")
 				.start(customerStep()) // 配置该Job的Step
 				.listener(commonJobListener)
 				.build();

@@ -1,15 +1,12 @@
-package com.ssm.batch.config;
+package com.ssm.batch.step;
 
-import com.ssm.batch.entity.Customer;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.batch.MyBatisPagingItemReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.NonTransientResourceException;
-import org.springframework.batch.item.ParseException;
-import org.springframework.batch.item.UnexpectedInputException;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Map;
 
 /**
  * @Package: com.ssm.batch.config
@@ -22,10 +19,21 @@ public class CommonMyBatisItemReader<T> extends MyBatisPagingItemReader<T> {
 
 	private static Logger logger = LoggerFactory.getLogger(CommonMyBatisItemReader.class);
 
-	public CommonMyBatisItemReader(SqlSessionFactory sqlSessionFactory){
+	@Autowired
+	private SqlSessionFactory sqlSessionFactory;
+
+
+
+	public CommonMyBatisItemReader(SqlSessionFactory sqlSessionFactory, Map<String, Object> testMap){
 		logger.info("---------start reader------------");
 		setSqlSessionFactory(sqlSessionFactory);
+		setParameterValues(testMap);
 		setQueryId("com.ssm.batch.dao.CustomerMapper.selectAllCustomer");
-		setPageSize(2);
+		setPageSize(5);
 	}
+
+
+
+
+
 }

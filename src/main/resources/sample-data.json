@@ -1,18 +1,8 @@
 [
  {"customerId":1,"customerUser":"张一","customerTel":"0431-12345678","customerAddress":"长春市"},
  {"customerId":3,"customerUser":"张三","customerTel":"0431-98765432","customerAddress":"长春市"},
- {"customerId":4,"customerUser":"张四","customerTel":"0431-36925810","customerAddress":"吉林市"},
- {"customerId":5,"customerUser":"张五","customerTel":"0432-12345678","customerAddress":"吉林市"},
- {"customerId":6,"customerUser":"张六","customerTel":"0433-45612378","customerAddress":"白山市"},
- {"customerId":7,"customerUser":"张七","customerTel":"0434-56666233","customerAddress":"四平市"},
  {"customerId":8,"customerUser":"张八","customerTel":"0431-46454541","customerAddress":"长春市"},
  {"customerId":9,"customerUser":"张九","customerTel":"0431-78787888","customerAddress":"长春市"},
  {"customerId":10,"customerUser":"张十","customerTel":"0431-33333333","customerAddress":"长春市"},
- {"customerId":11,"customerUser":"张零","customerTel":"0431-12345678","customerAddress":"九台市"},
- {"customerId":12,"customerUser":"李一","customerTel":"0432-12345678","customerAddress":"北京市"},
- {"customerId":13,"customerUser":"李二","customerTel":"0432-987654","customerAddress":"安徽"},
- {"customerId":14,"customerUser":"张十0","customerTel":"04313-33333333","customerAddress":"长春市"},
- {"customerId":15,"customerUser":"张零1","customerTel":"04313-12345678","customerAddress":"九台市"},
- {"customerId":16,"customerUser":"李一2","customerTel":"04323-12345678","customerAddress":"北京市"},
- {"customerId":17,"customerUser":"李二3","customerTel":"04323-987654","customerAddress":"安徽"}
+ {"customerId":14,"customerUser":"张十0","customerTel":"04313-33333333","customerAddress":"长春市"}
 ]

@@ -1,4 +1,4 @@
-package com.ssm.batch.config;
+package com.ssm.batch.step;
 
 import com.ssm.batch.entity.Customer;
 import org.springframework.batch.item.ItemProcessor;

@@ -3,6 +3,7 @@ package com.ssm.batch.controller;
 import com.ssm.batch.entity.Customer;
 import com.ssm.batch.service.CustomerService;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -30,10 +31,14 @@ public class HelloController {
     public void hello() {
         try {
             JobParameters jobParameters = new JobParametersBuilder()
+					.addString("customerAddress","长春市")
+					.addString("customerTel","0431")
+					.addLong("customerId",5L)
                     .toJobParameters();
             // 通过调用 JobLauncher 中的 run 方法启动一个批处理
-            jobLauncher.run(job, jobParameters);
-        } catch (Exception e) {
+			JobExecution result = jobLauncher.run(job, jobParameters);
+			System.out.println("jobresult-----:"+result);
+		} catch (Exception e) {
             e.printStackTrace();
         }
     }
