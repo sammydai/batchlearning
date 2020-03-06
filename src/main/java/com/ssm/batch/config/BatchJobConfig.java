@@ -2,6 +2,7 @@ package com.ssm.batch.config;
 
 import com.ssm.batch.entity.Customer;
 import com.ssm.batch.listener.*;
+import com.ssm.batch.step.CommonFileItemWriter;
 import com.ssm.batch.step.CommonJsonItemWriter;
 import com.ssm.batch.step.CommonMyBatisItemReader;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -10,16 +11,24 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.file.FlatFileItemWriter;
+import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
+import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
+import org.springframework.batch.item.file.transform.FieldExtractor;
+import org.springframework.batch.item.file.transform.LineAggregator;
 import org.springframework.batch.item.json.JacksonJsonObjectMarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @Package: com.ssm.batch.config
@@ -30,6 +39,8 @@ import java.util.Map;
 
 @Configuration
 public class BatchJobConfig {
+
+	private static final String PROPERTY_CSV_EXPORT_FILE_PATH = "/Users/daiwenting/GitProject/batchlearning/src/main/resources/sample-data-test.csv";
 
 	// 注入JobBuilderFactory，用来构建Job
 	@Autowired
@@ -61,10 +72,18 @@ public class BatchJobConfig {
 	@Autowired
 	CommonItemWriterListener commonItemWriterListener;
 
+
+
 	@Bean
 	@StepScope
 	public CommonMyBatisItemReader<Customer> customerReader(@Value("#{@datesParameters}") Map<String, Object> datesParameters){
 		return new CommonMyBatisItemReader<>(sqlSessionFactory,datesParameters);
+	}
+
+	@Bean
+	@StepScope
+	public CommonFileItemWriter<Customer> customerWriter(){
+		return new CommonFileItemWriter<>(Customer.class);
 	}
 
 	@StepScope
@@ -78,27 +97,42 @@ public class BatchJobConfig {
 		map.put("customerTel", customerTel);
 		map.put("customerId", customerId);
 		System.out.println("=========map get customerAddress======:"+map.get("customerAddress"));
-		// logger.info((String) map.get("yesterday"));
-		// map.put("today", today);
-		// map.put("first_day_of_the_month", firstDayOfTheMonth);
-		// map.put("first_day_of_the_previous_month", firstDayOfThePreviousMonth);
 		return map;
 	}
 
+	// @Bean
+	// @StepScope
+	// public CommonJsonItemWriter commonJsonItemWriter() {
+	// 	FileSystemResource fileSystemResource = new FileSystemResource("/Users/daiwenting/GitProject/batchlearning/src/main/resources/sample-data.json");
+	// 	return new CommonJsonItemWriter(fileSystemResource,new JacksonJsonObjectMarshaller());
+	// }
+
 	@Bean
-	@StepScope
-	public CommonJsonItemWriter commonJsonItemWriter() {
-		FileSystemResource fileSystemResource = new FileSystemResource("/Users/daiwenting/GitProject/batchlearning/src/main/resources/sample-data.json");
-		return new CommonJsonItemWriter(fileSystemResource,new JacksonJsonObjectMarshaller());
+	public FlatFileItemWriter<Customer> writer() {
+		FlatFileItemWriter<Customer> writer = new FlatFileItemWriter<>();
+		// writer.setResource(new FileSystemResource("output/domain.all.csv"));
+		writer.setResource(new FileSystemResource(PROPERTY_CSV_EXPORT_FILE_PATH));
+		writer.setEncoding("UTF-8");
+		writer.setLineAggregator(new DelimitedLineAggregator<Customer>() {{
+			setDelimiter(",");
+			setFieldExtractor(new BeanWrapperFieldExtractor<Customer>() {{
+				// setNames(new String[]{"id", "domain"});
+				setNames(new String[] {"customerId", "customerUser", "customerTel","customerAddress"});
+
+			}});
+		}});
+		return writer;
 	}
+
+
 
 	// 配置一个Step
 	@Bean
 	Step customerStep() {
-		return stepBuilderFactory.get("customerStep7")//通过get获取一个StepBuilder，参数数Step的name
+		return stepBuilderFactory.get("customerStep8")//通过get获取一个StepBuilder，参数数Step的name
 				.<Customer, Customer>chunk(2)//方法的参数2，表示每读取到两条数据就执行一次write操作
 				.reader(customerReader(datesParameters(null,null,null))).listener(commonItemReaderListener)// 配置reader
-				.writer(commonJsonItemWriter()).listener(commonItemWriterListener)// 配置writer
+				.writer(customerWriter()).listener(commonItemWriterListener)// 配置writer
 				.build();
 
 	}
@@ -107,7 +141,7 @@ public class BatchJobConfig {
 	@Bean
 	Job csvJob() {
 		// 通过jobBuilderFactory构建一个Job，get方法参数为Job的name
-		return jobBuilderFactory.get("customerJob7")
+		return jobBuilderFactory.get(UUID.randomUUID().toString())
 				.start(customerStep()) // 配置该Job的Step
 				.listener(commonJobListener)
 				.build();

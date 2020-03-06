@@ -32,8 +32,8 @@ public class HelloController {
         try {
             JobParameters jobParameters = new JobParametersBuilder()
 					.addString("customerAddress","长春市")
-					.addString("customerTel","0431")
-					.addLong("customerId",5L)
+					.addString("customerTel","43")
+					.addLong("customerId",null)
                     .toJobParameters();
             // 通过调用 JobLauncher 中的 run 方法启动一个批处理
 			JobExecution result = jobLauncher.run(job, jobParameters);

@@ -17,13 +17,13 @@ public class CommonItemReaderListener implements ItemReadListener<Customer> {
 
 	@Override
 	public void beforeRead() {
-		System.out.println("=========================");
+		// System.out.println("=========================");
 		System.out.println("========before read======");
 	}
 
 	@Override
 	public void afterRead(Customer customer) {
-		System.out.println("=========================");
+		// System.out.println("=========================");
 		System.out.println("========after read======");
 		System.out.println(customer.toString());
 	}

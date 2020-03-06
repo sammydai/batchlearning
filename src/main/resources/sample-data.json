@@ -1,7 +1,5 @@
 [
  {"customerId":1,"customerUser":"张一","customerTel":"0431-12345678","customerAddress":"长春市"},
- {"customerId":3,"customerUser":"张三","customerTel":"0431-98765432","customerAddress":"长春市"},
- {"customerId":8,"customerUser":"张八","customerTel":"0431-46454541","customerAddress":"长春市"},
  {"customerId":9,"customerUser":"张九","customerTel":"0431-78787888","customerAddress":"长春市"},
  {"customerId":10,"customerUser":"张十","customerTel":"0431-33333333","customerAddress":"长春市"},
  {"customerId":14,"customerUser":"张十0","customerTel":"04313-33333333","customerAddress":"长春市"}

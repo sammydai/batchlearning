@@ -201,9 +201,11 @@
     <include refid="Base_Column_List" />
     from tb_customer
     WHERE  customer_address = #{customerAddress,jdbcType=VARCHAR}
-    <if test="customer_tel!=null and customer_tel!=''">
-      <bind name="customer_tel" value="'%' + customer_tel + '%'"/>
-      and customer_tel like #{customerTel,jdbcType=VARCHAR}
+    <if test="customerTel!=null and customerTel!=''">
+      and customer_tel like concat('%',#{customerTel,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="customerId!=null and customerId!=''">
+      and customer_id like concat('%',#{customerId,jdbcType=INTEGER},'%')
     </if>
     limit #{_pagesize} OFFSET #{_skiprows}
   </select>

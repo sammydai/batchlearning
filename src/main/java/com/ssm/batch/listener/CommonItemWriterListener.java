@@ -18,7 +18,7 @@ public class CommonItemWriterListener implements ItemWriteListener<Customer> {
 
 	@Override
 	public void beforeWrite(List<? extends Customer> list) {
-		System.out.println("=========================");
+		// System.out.println("=========================");
 		System.out.println("========before write=====");
 		System.out.println("========size============="+list.size());
 		for (Object o : list) {
@@ -30,7 +30,7 @@ public class CommonItemWriterListener implements ItemWriteListener<Customer> {
 
 	@Override
 	public void afterWrite(List<? extends Customer> list) {
-		System.out.println("=========================");
+		// System.out.println("=========================");
 		System.out.println("========after write=====");
 		System.out.println("========size============="+list.size());
 	}
