@@ -40,8 +40,6 @@ import java.util.UUID;
 @Configuration
 public class BatchJobConfig {
 
-	private static final String PROPERTY_CSV_EXPORT_FILE_PATH = "/Users/daiwenting/GitProject/batchlearning/src/main/resources/sample-data-test.csv";
-
 	// 注入JobBuilderFactory，用来构建Job
 	@Autowired
 	JobBuilderFactory jobBuilderFactory;
@@ -82,8 +80,8 @@ public class BatchJobConfig {
 
 	@Bean
 	@StepScope
-	public CommonFileItemWriter<Customer> customerWriter(){
-		return new CommonFileItemWriter<>(Customer.class);
+	public CommonFileItemWriter<Customer> customerWriter(@Value("")String filePath){
+		return new CommonFileItemWriter<>(Customer.class,filePath);
 	}
 
 	@StepScope
@@ -100,6 +98,15 @@ public class BatchJobConfig {
 		return map;
 	}
 
+	@StepScope
+	@Bean
+	public String filePathParameter(@Value("#{jobParameters[filePath]}")String filePath){
+		// Map<String, Object> map = new HashMap<>();
+		// map.put("filePath", filePath);
+		return filePath;
+	}
+
+
 	// @Bean
 	// @StepScope
 	// public CommonJsonItemWriter commonJsonItemWriter() {
@@ -107,32 +114,13 @@ public class BatchJobConfig {
 	// 	return new CommonJsonItemWriter(fileSystemResource,new JacksonJsonObjectMarshaller());
 	// }
 
-	@Bean
-	public FlatFileItemWriter<Customer> writer() {
-		FlatFileItemWriter<Customer> writer = new FlatFileItemWriter<>();
-		// writer.setResource(new FileSystemResource("output/domain.all.csv"));
-		writer.setResource(new FileSystemResource(PROPERTY_CSV_EXPORT_FILE_PATH));
-		writer.setEncoding("UTF-8");
-		writer.setLineAggregator(new DelimitedLineAggregator<Customer>() {{
-			setDelimiter(",");
-			setFieldExtractor(new BeanWrapperFieldExtractor<Customer>() {{
-				// setNames(new String[]{"id", "domain"});
-				setNames(new String[] {"customerId", "customerUser", "customerTel","customerAddress"});
-
-			}});
-		}});
-		return writer;
-	}
-
-
-
 	// 配置一个Step
 	@Bean
 	Step customerStep() {
 		return stepBuilderFactory.get("customerStep8")//通过get获取一个StepBuilder，参数数Step的name
 				.<Customer, Customer>chunk(2)//方法的参数2，表示每读取到两条数据就执行一次write操作
 				.reader(customerReader(datesParameters(null,null,null))).listener(commonItemReaderListener)// 配置reader
-				.writer(customerWriter()).listener(commonItemWriterListener)// 配置writer
+				.writer(customerWriter(filePathParameter(null))).listener(commonItemWriterListener)// 配置writer
 				.build();
 
 	}

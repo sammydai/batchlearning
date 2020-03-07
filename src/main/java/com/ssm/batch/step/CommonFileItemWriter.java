@@ -37,7 +37,7 @@ public class CommonFileItemWriter<T> extends FlatFileItemWriter<T> {
 
 	// private static final String PROPERTY_CSV_EXPORT_FILE_PATH = "/Users/daiwenting/GitProject/batchlearning/src/main/resources/sample-data-test.csv";
 
-    public CommonFileItemWriter(Class clz) {
+    public CommonFileItemWriter(Class clz,String filePath) {
         BeanWrapperFieldExtractor beanWrapperFieldExtractor = new BeanWrapperFieldExtractor();
         Field[] fields = clz.getDeclaredFields();
         List<String> list = new ArrayList<>();
@@ -54,7 +54,8 @@ public class CommonFileItemWriter<T> extends FlatFileItemWriter<T> {
         lineAggregator.setFieldExtractor(beanWrapperFieldExtractor);
         setName(clz.getSimpleName());
         setEncoding("UTF-8");
-        fileSystemResource = new FileSystemResource("/Users/daiwenting/GitProject/batchlearning/src/main/resources/sample-data-test-acsii.csv");
+        // fileSystemResource = new FileSystemResource("/Users/daiwenting/GitProject/batchlearning/src/main/resources/sample-data-test-acsii.csv");
+		fileSystemResource = new FileSystemResource(filePath);
         setResource(fileSystemResource);
         setHeaderCallback(new FlatFileHeaderCallback() {
             @Override
